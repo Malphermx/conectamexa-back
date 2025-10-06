@@ -1,0 +1,11 @@
+{
+    "require": {
+        "firebase/php-jwt": "^6.10",
+        "bluerhinos/phpmqtt": "^1.0",
+        "php-mqtt/client": "^2.1",
+        "stripe/stripe-php": "^16.3",
+        "setasign/fpdf": "^1.8",
+        "phpmailer/phpmailer": "^6.9",
+        "openpay/sdk": "^3.1"
+    }
+}

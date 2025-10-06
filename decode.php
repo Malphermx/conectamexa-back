@@ -1,0 +1,46 @@
+<?php
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+
+// Función para decodificar un token JWT
+
+
+function decodeToken($jwt) {
+    $secretKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7qZOeryp8nef/
+xiwt6wY/AJo+VFiVkOXSEdurcPAp5It+XYQ3ltZgV0Qm4HW0V9aQCurzzSM+8Rk8
+9mpJGbBfdL3/8brjWpkoqBdDwKp369A8BbjwB3uFs8jjggxgzKkIVWELtF8DDOZy
+9ZKZmKznAXx0GCkjgZCyZ0kepKV+VSdibugHhA8ShIchwLzmAKwmd05sN9M5bcRX
+W2Da3enb4b0/hwEOkO1edtYoyMpDqlXcnbjIlwhF08bZDsm4+P4RosVmg1ZWhvj/
+2oq3NTfiG5zrgy79mOKQxj7anuRWzc9vzIAnc8BdAfNX90N4Wn9EYL7iMzJPE650
+gKontE9rAgMBAAECggEAAOrw4l9H7WkWR91vvN+/3ZICrxhZgI2/WfolYV7Bhers
+tbb+XQk7TihPGIOTf8jIL1cmU//mUrn6Hh60YVwjTSw0e6pyeAcq5ZSA3J92FfUM
+xSZgA6h9tact7dLmfZiyoOxN97Evn8Ox4tEJoP+qpMyQj77IgLhy/TRdGq3Cc240
+BO6VEJq8HbN3yG3qzxFsD4TSwoR1wmTsT9JDEAxhLUxjT6+nuKxc/Y97dKAM860o
+2zOm2RJOCWC5o8BBlUDQPpArm4ZnbdI6p+iBwgRoEPYgzywXkjJ/P/KlB9EW2nGW
+mglVG4vCzdXtVb3/JjPNULU6D2XYzadC+oi6oIUHtQKBgQD2wPG3tGi+NqDwX1ZF
+SRJezasIkZ0Zvbcvl9fxG3z7TQeZVzu3wK4iVCZkcJEeVSzRzE2fSj9xU647y+pI
+TTar0vhHHm9qLaVw28AbPeAT5/Ttkwbqy3lzQfFeWAos+ETxMpEH5jgapY4ogu0h
+fzuNQGIG4OQCFWw3B5KENwHqvQKBgQDCschGJCPtEPBhuXhBT0R27dugPXla8pTe
+b/qLDoBNd6LwVCcEWWZ01gSMypV2oh7WcidS00mGbPICe9parIppG5bJm4nGcD40
+j84Fnr4cGFkwgOa0lrYKtY40aOzXsUCLd/5ACjle8yyRL9UaOdvWDSWkvEqiclBM
+DoL8mxrZRwKBgBgIXMKGqLj1+yDOOEnRPx/KqkDQZduu9ZuGD3slMTwMmZPewis4
+cf1X8tFPgWLR6uaYHmtIQPuZqdubFbtrAcskZhgPJ8zQm09tp70/foaRzfIhosfV
+f4OxRX/p1TviBlzzjtqVGpvFyh25+ryLdtJgFewTlUF6sqp9a1DDRsWFAoGAPK8D
+GHGtTPfppNwVUm3tjhAnU3O1vpY7tnU6p1sWvI6cl8HzA1UGLUaD1opSOc7gQ8EC
+5rr6gM62Q/XsojSDU62Iu0Aimlpj2Sg1c+T9pm4kZozW29TZ2s6qC0XlBHm3/4Cg
+G7/UD/dFnd9F0c3U6ovgfs89iBKPWpVvWGLT5IMCgYEAzRiI5qXsp8HbwMlfJMDF
+gOVYNReb4IQT8wta8XFCR78jIHzOV/9S+onkxsC0dvssHHPLj8ChgfXuAHexJ4Qa
+ejTqrz4h7bHcEGVPUTEDLi490dKw/Ep5H5vM974/kU17a936p3VBYLUrkeq+UdO5
+GMKX6LmeW2na4TO0LlZTg7Y="; // Reemplaza con tu clave secreta
+    try {
+        $decoded = JWT::decode($jwt, new Key($secretKey, 'HS256'));
+        return (array) $decoded; // Convierte el objeto a un arreglo asociativo
+    } catch (Exception $e) {
+        http_response_code(401);
+        echo json_encode(["error" => "Token inválido o expirado"]);
+        exit();
+    }
+}
+
+?>
