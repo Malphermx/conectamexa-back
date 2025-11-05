@@ -1,9 +1,9 @@
 <?php
 
 use \Firebase\JWT\JWT;
+
 include_once 'config.php';
 require_once 'vendor/autoload.php';
-
 
 // Mostrar errores para depuración
 ini_set('display_errors', 1);
@@ -40,6 +40,7 @@ $dataObject = json_decode($JSONData);
 // Iniciar sesión
 session_start();
 $mysqli->set_charset('utf8');
+
 // Validar que se reciban los datos
 if (!isset($dataObject->usuario) || !isset($dataObject->clave)) {
     http_response_code(400); // Bad Request
@@ -49,71 +50,76 @@ if (!isset($dataObject->usuario) || !isset($dataObject->clave)) {
 
 // Asignar los datos recibidos
 $usuario = $dataObject->usuario;
-$pas = $dataObject->clave;
+$password = $dataObject->clave;
 
-
-// Preparar y ejecutar la consulta SQL
+// Preparar y ejecutar la consulta SQL CORREGIDA
 if ($nueva_consulta = $mysqli->prepare("SELECT 
-    u.id, 
-    u.nombre, 
-    u.apellidos, 
-    u.usuario AS correo, 
-    u.clave, 
-    u.idTipoUsuario, 
-    t.etiquetaTipoUsuario, 
-    t.descripcionTipoUsuario, 
-    u.celular
-FROM usuarios u
-INNER JOIN tipo_usuario t ON u.idTipoUsuario = t.idTipoUsuario
-WHERE u.usuario = ?;
-")) {
+    id, 
+    username, 
+    email, 
+    password_hash,
+    created_at
+FROM admin_users 
+WHERE email = ? OR username = ?")) {
 
-    $nueva_consulta->bind_param('s', $usuario);
+    $nueva_consulta->bind_param('ss', $usuario, $usuario);
     $nueva_consulta->execute();
     $resultado = $nueva_consulta->get_result();
 
     if ($resultado->num_rows == 1) {
         $datos = $resultado->fetch_assoc();
-        $encriptado_db = $datos['clave'];
+        $password_hash_db = $datos['password_hash']; // CORREGIDO: usar password_hash en lugar de password
 
-        if (password_verify($pas, $encriptado_db)) {
+        if (password_verify($password, $password_hash_db)) {
+            
+            // Generar token JWT
             $token = array(
                "iss" => $issuer_claim,
                "aud" => $audience_claim,
                "iat" => time(),
                "exp" => time() + $jwt_expiration,
                "data" => array(
-                   "id" => $datos['id'],     //id_user
-                   "email" => $usuario,
-                   "idTipoUsuario"=>$datos['idTipoUsuario']
+                   "id" => $datos['id'],
+                   "username" => $datos['username'],
+                   "email" => $datos['email'],
                )
             );
+            
             $jwt = JWT::encode($token, $secret_key, 'HS256');
 
+            // Respuesta exitosa
             echo json_encode(array(
-                    'data'=>array(
+                    'data' => array(
                         'token' => $jwt,
                         'conectado' => true,
-                        'usuario' => $datos['correo'],
-                        'nombre' => $datos['nombre'],
-                        'apellidos' => $datos['apellidos'],
                         'id' => $datos['id'],
-                        'idTipoUsuario' => $datos['idTipoUsuario'],
-                        'etiquetaTipoUsuario' => $datos['etiquetaTipoUsuario']
-                    ),
-                    // 'status'=>http_response_code(200)
+                        'username' => $datos['username'],
+                        'email' => $datos['email'],
+                        'fecha_registro' => $datos['created_at']
+                    )
             ));
         } else {
-            echo json_encode(array('conectado' => false, 'error' => 'La clave es incorrecta.'));
+            http_response_code(401);
+            echo json_encode(array(
+                'conectado' => false, 
+                'error' => 'La contraseña es incorrecta.'
+            ));
         }
     } else {
-        echo json_encode(array('conectado' => false, 'error' => 'El usuario no existe.'));
+        http_response_code(404);
+        echo json_encode(array(
+            'conectado' => false, 
+            'error' => 'El usuario no existe o está inactivo.'
+        ));
     }
 
     $nueva_consulta->close();
 } else {
     http_response_code(500);
-    echo json_encode(array('conectado' => false, 'error' => 'Error en la consulta: ' . $mysqli->error));
+    echo json_encode(array(
+        'conectado' => false, 
+        'error' => 'Error en la consulta: ' . $mysqli->error
+    ));
 }
 
 $mysqli->close();

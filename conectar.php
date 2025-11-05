@@ -10,7 +10,7 @@ function conectarDB() {
     // $password = "Dermamirta2024";
     $password = "";
     // $bd = "u794638013_database";
-    $bd = "gestoria";
+    $bd = "conectamexa";
 
     // Intenta establecer la conexión
     $conexion = mysqli_connect($servidor, $usuario, $password, $bd);
