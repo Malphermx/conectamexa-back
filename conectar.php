@@ -5,12 +5,12 @@ header("Content-Type: application/json; charset=utf-8"); // Cambié a applicatio
 
 function conectarDB() {
     $servidor = "localhost";
-    // $usuario = "u794638013_useradmin";
-    $usuario = "root";
-    // $password = "Dermamirta2024";
-    $password = "";
-    // $bd = "u794638013_database";
-    $bd = "conectamexa";
+    $usuario = "u709694486_usuario";
+    // $usuario = "root";
+    $password = "br7L4Ry~>J>9";
+    // $password = "";
+    $bd = "u709694486_conectamexa";
+    // $bd = "conectamexa";
 
     // Intenta establecer la conexión
     $conexion = mysqli_connect($servidor, $usuario, $password, $bd);
